@@ -16,11 +16,6 @@
  */
 var XpathWrapper = function(source, xmlns) {
 
-  this.reservedNamespaces = {
-    "xml": "http://www.w3.org/XML/1998/namespace",
-    "xmlns": "http://www.w3.org/2000/xmlns/"
-  };
-
   /**
    * @param {XPathResult} result
    * @constructor
@@ -52,6 +47,17 @@ var XpathWrapper = function(source, xmlns) {
     }
   };
 
+  /**
+   * @param {Object|Function} xmlns
+   * @constructor
+   */
+  var NamespaceResolver = function(xmlns) {
+    this.reservedNamespaces = {
+      "xml": "http://www.w3.org/XML/1998/namespace",
+      "xmlns": "http://www.w3.org/2000/xmlns/"
+    };
+    this.xmlns = xmlns;
+  }
 
   /**
    * Get the full namespace string for an prefix
@@ -59,7 +65,10 @@ var XpathWrapper = function(source, xmlns) {
    * @param {string} prefix
    * @returns {string|null}
    */
-  this.resolveNamespace = function(prefix) {
+  NamespaceResolver.prototype.lookupNamespaceURI = function(prefix) {
+    if (prefix == '') {
+      return null;
+    }
     if (this.reservedNamespaces[prefix]) {
       return this.reservedNamespaces[prefix];
     }
@@ -67,8 +76,7 @@ var XpathWrapper = function(source, xmlns) {
       return this.xmlns(prefix);
     }
     return this.xmlns[prefix] || null;
-  };
-
+  }
   /**
    * Evaluate an xpath expression. The return value depends on the
    * expression result. Scalar result types are returned a scalars.
@@ -87,9 +95,7 @@ var XpathWrapper = function(source, xmlns) {
     result = this.document.evaluate(
       expression,
       (context instanceof Node) ? context : this.context,
-      function (prefix) {
-        return that.resolveNamespace(prefix)
-      },
+      new NamespaceResolver(this.xmlns),
       resultType || XPathResult.ANY_TYPE,
       null
     );
@@ -117,8 +123,10 @@ var XpathWrapper = function(source, xmlns) {
     this.document = dom = source.ownerDocument;
     this.context = source;
   }
-  if (!dom.evaluate && window.document.evaluate) {
-    dom.evaluate = window.document.evaluate;
+  if (!dom.evaluate) {
+    if (typeof installDOM3XPathSupport != 'undefined') {
+      installDOM3XPathSupport(dom, new XPathParser());
+    }
   }
 };
 

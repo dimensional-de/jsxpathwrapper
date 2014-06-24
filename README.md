@@ -56,3 +56,10 @@ Converts the nodes list into an array and returns it.
 
 Calls the provided callback for each node.
 
+## IE Support
+
+Most Modern Browsers have native support for DOM3 Xpath - Internet Explorer has not.
+The wrapper can use [Cameron McCormack xpath.js](http://mcc.id.au/xpathjs) library for that.
+
+
+

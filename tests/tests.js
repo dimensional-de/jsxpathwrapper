@@ -247,14 +247,27 @@ QUnit.test(
   function( assert ) {
     var xpath = new XpathWrapper(
       '<items xmlns="urn:foo"><one/><two/></items>',
-      function (prefix) {
-        console.log(prefix);
-        assert.equal(prefix, 'foo');
-        return 'urn:foo';
+      {}
+    );
+    assert.equal(
+      xpath.evaluate('name(/*)'),
+      'items'
+    );
+  }
+);
+
+QUnit.test(
+  "Namespaces: name of first element from namespace 'urn:bar'",
+  function( assert ) {
+    var xpath = new XpathWrapper(
+      '<items xmlns="urn:foo"><one xmlns="urn:bar"/><two/></items>',
+      {
+        foo: 'urn:foo',
+        bar: 'urn:bar'
       }
     );
     assert.equal(
-      xpath.evaluate('name(/*/*[1])'),
+      xpath.evaluate('name(//bar:*)'),
       'one'
     );
   }
