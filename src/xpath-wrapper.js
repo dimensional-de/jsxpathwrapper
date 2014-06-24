@@ -3,8 +3,8 @@
  *
  * Basic Usage:
  *
- *   var xpath = new XpathWrapper(xml,  {atom : 'http://www.w3.org/2005/Atom'});
- *   for (var entry in xpath.evaluate('atom:entry')) {
+ *   var xpath = new XpathWrapper(source,  {atom : 'http://www.w3.org/2005/Atom'});
+ *   for (var entry in xpath.evaluate('//atom:entry')) {
  *     console.log(
  *       xpath.evaluate('string(atom:title)', entry)
  *     );
