@@ -3,7 +3,7 @@
  *
  * Basic Usage:
  *
- *   var xpath = new XpathWrapper({atom : 'http://www.w3.org/2005/Atom'});
+ *   var xpath = new XpathWrapper(xml,  {atom : 'http://www.w3.org/2005/Atom'});
  *   for (var entry in xpath.evaluate('atom:entry')) {
  *     console.log(
  *       xpath.evaluate('string(atom:title)', entry)
@@ -136,9 +136,10 @@ var XpathWrapper = function(source, xmlns) {
   if (sourceType == 'string') {
     var parser = new DOMParser();
     this.document = parser.parseFromString(source, 'application/xml');
+    this.context = this.document;
   } else if (source instanceof Document) {
     this.document = source;
-    this.context = source.documentElement || source;
+    this.context = source;
   } else if (source instanceof Node) {
     this.document = source.ownerDocument;
     this.context = source;
@@ -148,7 +149,7 @@ var XpathWrapper = function(source, xmlns) {
 /**
  * If jQuery exists, add functions to it.
  */
-if (jQuery) {
+if (typeof jQuery == 'object') {
 
   /**
    * Return a wrapper object
