@@ -61,7 +61,9 @@ var xpath = new XpathWrapper(
 );
 xpath.evaluate('//atom:entry').each(
   function(entry, index) {
-    xpath.evaluate('string(atom:title)', entry)
+    console.log(
+      xpath.evaluate('string(atom:title)', entry)
+    }
   }
 }
 ```
