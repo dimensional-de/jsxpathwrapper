@@ -25,34 +25,9 @@ var XpathWrapper = function(source, xmlns) {
    * @param {XPathResult} result
    * @constructor
    */
-  function XpathNodesIterator(result) {
-    this.result = result;
-    this.current = null;
-  }
-
-  /**
-   * Iterator next method
-   * @returns {Node}
-   */
-  XpathNodesIterator.prototype.next = function() {
-    this.current = this.result.iterateNext();
-    if (this.current) {
-      return this.current;
-    } else {
-      throw StopIteration;
-    }
-  };
-
-  /**
-   * @param {XPathResult} result
-   * @constructor
-   */
   function XpathNodes(result) {
     this.result = result;
   }
-  XpathNodes.prototype.__iterator__ = function() {
-    return new XpathNodesIterator(this.result);
-  };
 
   /**
    * @returns {Array}
@@ -72,14 +47,11 @@ var XpathWrapper = function(source, xmlns) {
    */
   XpathNodes.prototype.each = function(callback) {
     var index = 0, item;
-    try {
-      var iterator = this.__iterator__();
-      while (item = iterator.next()) {
-        callback(item, index++);
-      }
-    } catch (StopIteration) {
+    while (item = this.result.iterateNext()) {
+      callback(item, index++);
     }
   };
+
 
   /**
    * Get the full namespace string for an prefix
@@ -133,16 +105,20 @@ var XpathWrapper = function(source, xmlns) {
 
   this.xmlns = xmlns;
   var sourceType = typeof source;
+  var dom;
   if (sourceType == 'string') {
     var parser = new DOMParser();
-    this.document = parser.parseFromString(source, 'application/xml');
-    this.context = this.document;
+    this.document = dom = parser.parseFromString(source, 'application/xml');
+    this.context = dom;
   } else if (source instanceof Document) {
-    this.document = source;
+    this.document = dom = source;
     this.context = source;
   } else if (source instanceof Node) {
-    this.document = source.ownerDocument;
+    this.document = dom = source.ownerDocument;
     this.context = source;
+  }
+  if (!dom.evaluate && window.document.evaluate) {
+    dom.evaluate = window.document.evaluate;
   }
 };
 

@@ -12,10 +12,12 @@ Basic Usage:
 var xpath = new XpathWrapper(
   source,  {atom : 'http://www.w3.org/2005/Atom'}
 );
-for (var entry in xpath.evaluate('//atom:entry')) {
-  console.log(
-    xpath.evaluate('string(atom:title)', entry)
-  );
+xpath.evaluate('//atom:entry').each(
+  function(entry, index) {
+    console.log(
+      xpath.evaluate('string(atom:title)', entry)
+    }
+  }
 }
 ```
 
@@ -44,8 +46,7 @@ You can force the return of a single node using `XPathResult.FIRST_ORDERED_NODE_
 
 ## XpathNodes
 
-An internal object type returned for node lists. It implements an iterator
-and can be used with `for..in`.
+An internal object type returned for node lists.
 
 ### XpathNodes.toArray()
 
@@ -54,17 +55,4 @@ Converts the nodes list into an array and returns it.
 ### XpathNodes.each()
 
 Calls the provided callback for each node.
-
-```javascript
-var xpath = new XpathWrapper(
-  source,  {atom : 'http://www.w3.org/2005/Atom'}
-);
-xpath.evaluate('//atom:entry').each(
-  function(entry, index) {
-    console.log(
-      xpath.evaluate('string(atom:title)', entry)
-    }
-  }
-}
-```
 

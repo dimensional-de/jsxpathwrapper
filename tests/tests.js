@@ -18,17 +18,6 @@ QUnit.test(
 );
 
 QUnit.test(
-  "Empty document, created from string, created error document",
-  function( assert ) {
-    var xpath = new XpathWrapper('');
-    assert.equal(
-      xpath.evaluate('count(*)'),
-      1
-    );
-  }
-);
-
-QUnit.test(
   "Select document element name, created from document",
   function( assert ) {
     var parser = new DOMParser();
@@ -118,22 +107,6 @@ QUnit.test(
 );
 
 QUnit.test(
-  "Select node list, iterate with for..in",
-  function( assert ) {
-    var xpath = new XpathWrapper('<items><one/><two/></items>');
-    var nodes = xpath.evaluate('/items/*');
-    var actual = '';
-    for (var i in nodes) {
-      actual += ',' + i.nodeName;
-    }
-    assert.equal(
-      actual,
-      ',one,two'
-    );
-  }
-);
-
-QUnit.test(
   "Select node list, iterate with each()",
   function( assert ) {
     var xpath = new XpathWrapper('<items><one/><two/></items>');
@@ -167,12 +140,34 @@ QUnit.test(
 );
 
 QUnit.test(
+  "Namespaces: default element namespace, select node list",
+  function( assert ) {
+    var xpath = new XpathWrapper(
+      '<items xmlns="urn:foo"><one/><two/></items>',
+      {
+        'foo' : 'urn:foo'
+      }
+    );
+    var actual = '';
+    xpath.evaluate('/foo:items/foo:*').each(
+      function (node) {
+        actual += ',' + node.nodeName;
+      }
+    );
+    assert.equal(
+      actual,
+      ',one,two'
+    );
+  }
+);
+
+QUnit.test(
   "Namespaces: wrong default element namespace",
   function( assert ) {
     var xpath = new XpathWrapper(
-      '<items xmlns="urn:bar"><one/><two/></items>',
+      '<items xmlns="urn-bar"><one/><two/></items>',
       {
-        'foo' : 'urn:foo'
+        'foo' : 'urn-foo'
       }
     );
     assert.notEqual(
@@ -242,6 +237,24 @@ QUnit.test(
     );
     assert.equal(
       xpath.evaluate('name(/foo:items/foo:*[1])'),
+      'one'
+    );
+  }
+);
+
+QUnit.test(
+  "Namespaces: ignoring namespaces using *",
+  function( assert ) {
+    var xpath = new XpathWrapper(
+      '<items xmlns="urn:foo"><one/><two/></items>',
+      function (prefix) {
+        console.log(prefix);
+        assert.equal(prefix, 'foo');
+        return 'urn:foo';
+      }
+    );
+    assert.equal(
+      xpath.evaluate('name(/*/*[1])'),
       'one'
     );
   }
