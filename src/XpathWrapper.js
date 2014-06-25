@@ -11,7 +11,7 @@
  *   }
  *
  * @param {string|Document|Node} source
- * @param {Object|Function} xmlns
+ * @param {Object|Function} [xmlns]
  * @constructor
  */
 var XpathWrapper = function(source, xmlns) {
@@ -85,8 +85,8 @@ var XpathWrapper = function(source, xmlns) {
    * an Iterator, each() and toArray().
    *
    * @param {string}  expression
-   * @param {Node} context
-   * @param {int} resultType
+   * @param {Node} [context]
+   * @param {int} [resultType]
    * @returns {*}
    */
   this.evaluate = function (expression, context, resultType) {
