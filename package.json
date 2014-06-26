@@ -1,0 +1,30 @@
+{
+  "name": "XpathWrapper",
+  "version": "0.0.0",
+  "description": "Wraps document.evaluate() into a more convinient interface.",
+  "main": "src/XpathWrapper.js",
+  "devDependencies": {
+    "karma": "~0.10",
+    "karma-jasmine": "*"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dimensional-de/jsxpathwrapper.git"
+  },
+  "keywords": [
+    "xpath",
+    "dom"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dimensional-de/jsxpathwrapper/issues"
+  },
+  "homepage": "https://github.com/dimensional-de/jsxpathwrapper"
+}
