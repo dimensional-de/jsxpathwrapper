@@ -1,5 +1,7 @@
 # Xpath Wrapper
 
+[![Build Status](https://travis-ci.org/dimensional-de/jsxpathwrapper.svg?branch=master)](https://travis-ci.org/dimensional-de/jsxpathwrapper)
+
 Simplify the XPath handling for JavaScript. If you're using XPath
 in JavaScript you have to keep track of three variables. The document, the context
 and the namespace resolver.
