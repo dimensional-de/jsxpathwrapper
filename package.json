@@ -5,9 +5,7 @@
   "main": "src/XpathWrapper.js",
   "devDependencies": {
     "karma": "~0.10",
-    "karma-jasmine": "*",
-    "karma-coverage": "*",
-    "karma-htmlfile-reporter": "*"
+    "karma-jasmine": "*"
   },
   "directories": {
     "test": "tests"
