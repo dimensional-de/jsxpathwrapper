@@ -71,6 +71,18 @@ describe(
       }
     );
     it(
+      "Select first node of list",
+      function(){
+        var parser = new DOMParser();
+        var dom = parser.parseFromString(
+          '<node/>', 'application/xml'
+        );
+        var xpath = new XpathWrapper(dom);
+        expect(xpath.evaluate('/node').first())
+          .toBe(dom.documentElement);
+      }
+    );
+    it(
       "Select node list as array, read .toArray().length",
       function(){
         var xpath = new XpathWrapper('<items><one/><two/></items>');
@@ -83,11 +95,44 @@ describe(
         var xpath = new XpathWrapper('<items><one/><two/></items>');
         var actual = '';
         xpath.evaluate('/items/*').each(
-          function (node) {
-            actual += ',' + node.nodeName;
+          function () {
+            actual += ',' + this.nodeName;
           }
         );
         expect(actual).toEqual(',one,two');
+      }
+    );
+    it(
+      "Select node list, after fetch first element",
+      function(){
+        var xpath = new XpathWrapper('<items><one/><two/></items>');
+        var actual = '';
+        var nodes = xpath.evaluate('/items/*');
+        expect(nodes.first().nodeName).toBe('one');
+        nodes.each(
+          function () {
+            actual += ',' + this.nodeName;
+          }
+        );
+        expect(actual).toEqual(',one,two');
+      }
+    );
+    it(
+      "Select node list, iterate two times with each()",
+      function(){
+        var xpath = new XpathWrapper('<items><one/><two/></items>');
+        var actual = '';
+        xpath.evaluate('/items/*').each(
+          function () {
+            actual += ',' + this.nodeName;
+          }
+        );
+        xpath.evaluate('/items/*').each(
+          function () {
+            actual += ',' + this.nodeName;
+          }
+        );
+        expect(actual).toEqual(',one,two,one,two');
       }
     );
     it(
@@ -113,8 +158,8 @@ describe(
         );
         var actual = '';
         xpath.evaluate('/foo:items/foo:*').each(
-          function (node) {
-            actual += ',' + node.nodeName;
+          function () {
+            actual += ',' + this.nodeName;
           }
         );
         expect(actual).toEqual(',one,two');

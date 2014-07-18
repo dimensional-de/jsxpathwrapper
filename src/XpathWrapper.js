@@ -22,6 +22,7 @@ var XpathWrapper = function(source, xmlns) {
    */
   function XpathNodes(result) {
     this.result = result;
+    this.items = [];
   }
 
   /**
@@ -30,11 +31,26 @@ var XpathWrapper = function(source, xmlns) {
   XpathNodes.prototype.toArray = function() {
     var array = [];
     this.each(
-      function(item) {
-        array.push(item);
+      function() {
+        array.push(this);
       }
     );
     return array;
+  };
+
+  /**
+   * Get the first element in the result list, if here is any.
+   *
+   * @returns {Node|null}
+   */
+  XpathNodes.prototype.first = function() {
+    if (this.items[0]) {
+      return this.items[0];
+    } else if (this.result && (item = this.result.iterateNext())) {
+      this.items.push(item);
+      return item;
+    }
+    return null;
   };
 
   /**
@@ -42,9 +58,15 @@ var XpathWrapper = function(source, xmlns) {
    */
   XpathNodes.prototype.each = function(callback) {
     var index = 0, item;
-    while (item = this.result.iterateNext()) {
-      callback(item, index++);
+    for (var i = 0; i < this.items.length; i++) {
+      callback.call(this.items[i], index++);
     }
+    if (this.result) {
+      while (item = this.result.iterateNext()) {
+        callback.call(item, index++);
+      }
+    }
+    this.result = null;
   };
 
   /**
@@ -114,16 +136,16 @@ var XpathWrapper = function(source, xmlns) {
   var dom;
   if (sourceType == 'string') {
     var parser = new DOMParser();
-    this.document = dom = parser.parseFromString(source, 'application/xml');
-    this.context = dom;
+    this.document = this.context = dom = parser.parseFromString(source, 'application/xml');
   } else if (source instanceof Document) {
-    this.document = dom = source;
-    this.context = source;
+    this.document = this.context = dom = source;
   } else if (source instanceof Node) {
     this.document = dom = source.ownerDocument;
     this.context = source;
+  } else {
+    this.document = this.context = dom = document;
   }
-  if (!dom.evaluate) {
+  if (dom && !dom.evaluate) {
     if (typeof installDOM3XPathSupport != 'undefined') {
       installDOM3XPathSupport(dom, new XPathParser());
     }
@@ -133,32 +155,54 @@ var XpathWrapper = function(source, xmlns) {
 /**
  * If jQuery exists, add functions to it.
  */
-if (typeof jQuery == 'object') {
+if (typeof jQuery != 'undefined') {
 
-  /**
-   * Return a wrapper object
-   *
-   * @param {string|Document|Node} source
-   * @param {Object|Function} xmlns
-   * @returns {XpathWrapper}
-   */
-  jQuery.xpath = function(source, xmlns) {
-    return new XpathWrapper(source, xmlns);
-  };
+  (function($) {
 
-  /**
-   * Return an Xpath instance setting the first found element as
-   * the context.
-   *
-   * If no element is selected, use the use the jQuery context.
-   *
-   * @param {Object} xmlns
-   * @returns {XpathWrapper}
-   */
-  jQuery.fn.xpath = function(xmlns) {
-    return new XpathWrapper(
-      (this.length > 0) ? this[0] : this.context,
-      xmlns
-    );
-  }
+    /**
+     * Return a wrapper object
+     *
+     * @param {string|Document|Node} source
+     * @param {Object|Function} xmlns
+     * @returns {XpathWrapper}
+     */
+    $.xpath = function(source, xmlns) {
+      return new XpathWrapper(source, xmlns || jQuery.namespaces);
+    };
+
+    /**
+     * Return an Xpath instance setting the first found element as
+     * the context.
+     *
+     * If no element is selected, use the use the jQuery context.
+     *
+     * @param {Object} xmlns
+     * @returns {XpathWrapper}
+     */
+    $.fn.xpath = function(xmlns) {
+      return new XpathWrapper(
+        (this.length > 0) ? this[0] : this.context,
+        xmlns || jQuery.namespaces
+      );
+    };
+
+    /**
+     * Store the namespace on the jQuery object and execute the callback.
+     *
+     * @param {Object} xmlns
+     * @param {Function} callback
+     */
+    $.xmlns = function(xmlns, callback) {
+      $.namespaces = $.namespaces || {};
+      xmlns = xmlns || {};
+      for (var prefix in xmlns) {
+        $.namespaces[prefix] = xmlns[prefix];
+      }
+      if (callback instanceof Function) {
+        callback();
+      }
+    };
+
+    $.fn.xmlns = $.xmlns;
+  }(jQuery));
 }
