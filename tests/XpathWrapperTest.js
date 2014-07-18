@@ -122,17 +122,37 @@ describe(
       function(){
         var xpath = new XpathWrapper('<items><one/><two/></items>');
         var actual = '';
-        xpath.evaluate('/items/*').each(
+        nodes = xpath.evaluate('/items/*');
+        nodes.each(
           function () {
             actual += ',' + this.nodeName;
           }
         );
-        xpath.evaluate('/items/*').each(
+        nodes.each(
           function () {
             actual += ',' + this.nodeName;
           }
         );
         expect(actual).toEqual(',one,two,one,two');
+      }
+    );
+    it(
+      "Select node list, get nodes with item()",
+      function(){
+        var xpath = new XpathWrapper('<items><one/><two/></items>');
+        var actual = '';
+        var nodes = xpath.evaluate('/items/*');
+        actual += ',' + nodes.item(1).nodeName;
+        actual += ',' + nodes.item(0).nodeName;
+        expect(actual).toEqual(',two,one');
+      }
+    );
+    it(
+      "Select node list, getLength()",
+      function(){
+        var xpath = new XpathWrapper('<items><one/><two/></items>');
+        var nodes = xpath.evaluate('/items/*');
+        expect(nodes.getLength()).toEqual(2);
       }
     );
     it(

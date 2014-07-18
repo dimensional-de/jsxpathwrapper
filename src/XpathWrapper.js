@@ -63,10 +63,36 @@ var XpathWrapper = function(source, xmlns) {
     }
     if (this.result) {
       while (item = this.result.iterateNext()) {
+        this.items.push(item);
         callback.call(item, index++);
       }
     }
     this.result = null;
+  };
+
+  /**
+   * @return {int}
+   */
+  XpathNodes.prototype.getLength = function() {
+    if (this.result) {
+      while (item = this.result.iterateNext()) {
+        this.items.push(item);
+      }
+    }
+    return this.items.length;
+  };
+
+  /**
+   * @param {int}
+   * @return {Node|null}
+   */
+  XpathNodes.prototype.item = function(index) {
+    if (this.result) {
+      while (this.items.length < (index + 1) && (item = this.result.iterateNext())) {
+        this.items.push(item);
+      }
+    }
+    return this.items[index] || null;
   };
 
   /**
