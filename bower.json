@@ -1,0 +1,26 @@
+{
+  "name": "jsxpathwrapper",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dimensional-de/jsxpathwrapper",
+  "authors": [
+    "weinert@dimensional.de"
+  ],
+  "description": "Simplify the XPath handling for JavaScript. If you're using XPath in JavaScript you have to keep track of three variables. The document, the context and the namespace resolver.",
+  "main": "src/XpathWrapper.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "xpath",
+    "ie-xpath",
+    "standalone"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
